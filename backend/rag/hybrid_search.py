@@ -11,6 +11,24 @@ from rag.bm25_search import bm25_search
 from config import settings
 
 
+def _fetch_metadata_for_ids(ids: list[str]) -> dict[str, dict]:
+    """Fetch documents + metadata from ChromaDB for a list of IDs."""
+    if not ids:
+        return {}
+    try:
+        collection = get_collection()
+        results = collection.get(ids=ids, include=["documents", "metadatas"])
+        out = {}
+        for i, doc_id in enumerate(results["ids"]):
+            out[doc_id] = {
+                "document": results["documents"][i] if results["documents"] else "",
+                "metadata": results["metadatas"][i] if results["metadatas"] else {},
+            }
+        return out
+    except Exception:
+        return {}
+
+
 def build_chroma_filter(
     network_region: str = None,
     technology_type: str = None,
@@ -65,7 +83,7 @@ def reciprocal_rank_fusion(
                 "vector_similarity": vector_ids[doc_id].get("similarity", 0.0),
             })
         elif doc_id in bm25_ids:
-            entry.update({"document": "", "metadata": {}, "vector_similarity": 0.0})
+            entry.update({"document": "", "metadata": {}, "vector_similarity": 0.0, "_needs_fetch": True})
         fused.append(entry)
 
     return fused
@@ -91,4 +109,15 @@ def hybrid_search(
         bm25_results = [r for r in bm25_results if r["id"] in vector_ids]
 
     fused = reciprocal_rank_fusion(vector_results, bm25_results)
+
+    # Fetch metadata for BM25-only results that weren't in vector results
+    missing_ids = [r["id"] for r in fused if r.get("_needs_fetch")]
+    if missing_ids:
+        fetched = _fetch_metadata_for_ids(missing_ids)
+        for r in fused:
+            if r.get("_needs_fetch") and r["id"] in fetched:
+                r["document"] = fetched[r["id"]]["document"]
+                r["metadata"] = fetched[r["id"]]["metadata"]
+            r.pop("_needs_fetch", None)
+
     return fused[: settings.TOP_K_RESULTS * 2]
