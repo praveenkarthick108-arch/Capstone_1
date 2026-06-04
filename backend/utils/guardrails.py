@@ -2,6 +2,7 @@
 import re
 
 TELECOM_KEYWORDS = {
+    # Technical telecom terms
     "network", "alarm", "outage", "failure", "degradation", "latency", "packet",
     "5g", "4g", "lte", "nr", "enodeb", "gnb", "mme", "amf", "upf", "smf",
     "fiber", "mpls", "router", "switch", "tower", "bts", "bsc", "msc",
@@ -12,6 +13,17 @@ TELECOM_KEYWORDS = {
     "loss", "congestion", "overload", "reset", "reboot", "degraded", "restore",
     "port", "interface", "throughput", "jitter", "ping", "trace", "route",
     "core", "radio", "transport", "access", "backhaul", "fronthaul", "midhaul",
+    # Casual / end-user vocabulary
+    "internet", "wifi", "mobile", "phone", "call", "calls", "data", "speed",
+    "slow", "working", "not", "disconnected", "connection", "service", "issue",
+    "problem", "broken", "dead", "weak", "poor", "bad", "no", "cut", "off",
+    "dropping", "dropped", "lost", "coverage", "bars", "reception",
+    # Indian city names (map to regions via query enhancer)
+    "chennai", "bangalore", "bengaluru", "hyderabad", "mumbai", "delhi",
+    "kolkata", "pune", "ahmedabad", "jaipur", "lucknow", "nagpur", "surat",
+    "indore", "bhopal", "patna", "kochi", "chandigarh", "guwahati",
+    # Generic location words
+    "city", "region", "area", "zone", "sector", "location", "site",
 }
 
 PII_PATTERNS = [
@@ -50,7 +62,7 @@ def validate_query(query: str) -> tuple[bool, str]:
             return False, "Query contains disallowed content."
 
     query_words = set(re.findall(r"\b\w+\b", query.lower()))
-    if not query_words.intersection(TELECOM_KEYWORDS) and len(query_words) > 3:
+    if not query_words.intersection(TELECOM_KEYWORDS):
         return False, "Query does not appear to be telecom-related. Please describe a network fault or incident."
 
     return True, ""

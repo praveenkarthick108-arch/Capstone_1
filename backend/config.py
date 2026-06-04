@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     TOP_K_RESULTS: int = Field(default=5)
     RRF_K: int = Field(default=60)
     CORS_ORIGINS: list[str] = Field(default=["http://localhost:3000", "http://localhost:5173"])
+    SERVICENOW_INSTANCE: str = Field(default="https://dev385660.service-now.com")
+    SERVICENOW_USER: str = Field(default="admin")
+    SERVICENOW_PASSWORD: str = Field(default="7b0LJ+*GatxN")
 
     class Config:
         env_file = ".env"

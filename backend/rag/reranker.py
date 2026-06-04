@@ -15,7 +15,8 @@ _client = None
 def get_client() -> OpenAI:
     global _client
     if _client is None:
-        _client = OpenAI(api_key=settings.OPENAI_API_KEY, base_url=settings.OPENAI_BASE_URL, http_client=httpx.Client(verify=False))
+        _client = OpenAI(api_key=settings.OPENAI_API_KEY, base_url=settings.OPENAI_BASE_URL,
+                         http_client=httpx.Client(verify=False, timeout=8.0), max_retries=0)
     return _client
 
 

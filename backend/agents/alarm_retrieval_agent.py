@@ -68,7 +68,8 @@ def run(
     ])
 
     try:
-        client = OpenAI(api_key=settings.OPENAI_API_KEY, base_url=settings.OPENAI_BASE_URL, http_client=httpx.Client(verify=False))
+        client = OpenAI(api_key=settings.OPENAI_API_KEY, base_url=settings.OPENAI_BASE_URL,
+                        http_client=httpx.Client(verify=False, timeout=8.0), max_retries=0)
         response = client.chat.completions.create(
             model=settings.MODEL_NAME,
             messages=[

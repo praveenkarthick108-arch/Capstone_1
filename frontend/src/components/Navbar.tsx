@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Zap, BarChart2, Clock, Wifi } from 'lucide-react';
+import { Activity, Zap, BarChart2, Clock, Wifi, GitBranch } from 'lucide-react';
 import { getHealth } from '../services/api';
 import { HealthResponse } from '../types';
 
 interface NavbarProps {
-  currentPage: 'home' | 'dashboard' | 'history';
-  onNavigate: (page: 'home' | 'dashboard' | 'history') => void;
+  currentPage: 'home' | 'dashboard' | 'history' | 'architecture';
+  onNavigate: (page: 'home' | 'dashboard' | 'history' | 'architecture') => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
@@ -18,9 +18,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
   }, []);
 
   const navItems = [
-    { id: 'home' as const, label: 'Fault Analysis', icon: <Zap size={16} /> },
-    { id: 'dashboard' as const, label: 'Dashboard', icon: <BarChart2 size={16} /> },
-    { id: 'history' as const, label: 'Query History', icon: <Clock size={16} /> },
+    { id: 'home' as const,         label: 'Fault Analysis', icon: <Zap size={16} /> },
+    { id: 'dashboard' as const,    label: 'Dashboard',      icon: <BarChart2 size={16} /> },
+    { id: 'history' as const,      label: 'Query History',  icon: <Clock size={16} /> },
+    { id: 'architecture' as const, label: 'Architecture',   icon: <GitBranch size={16} /> },
   ];
 
   return (
